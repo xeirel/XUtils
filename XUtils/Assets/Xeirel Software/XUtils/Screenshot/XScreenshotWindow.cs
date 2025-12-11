@@ -3,9 +3,9 @@ using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using Unity.Mathematics;
-using XUtils.UI;
+using XUtils.UIUtils;
 
-namespace XUtils.Screenshot
+namespace XUtils.ScreenshotUtils
 {
     public class XScreenshotWindow : EditorWindow
     {
@@ -15,7 +15,7 @@ namespace XUtils.Screenshot
         private bool _transparentBackground;
         private Vector2 _scrollPosition;
 
-        [MenuItem("X Utils/XScreenshot Tool")]
+        [MenuItem("Tools/X Utils/XScreenshot Tool")]
         private static void ShowWindow()
         {
             var window = GetWindow<XScreenshotWindow>();
@@ -54,7 +54,6 @@ namespace XUtils.Screenshot
             _outputFolder = XEditorUI.FolderField("Output Folder", _outputFolder);
             _fileName = XEditorUI.TextField("File Name", _fileName);
             _resolution = XEditorUI.ResolutionField("Resolution", _resolution);
-
 
             XEditorUI.Divider();
             _format = XEditorUI.EnumPopup("Format ", _format);

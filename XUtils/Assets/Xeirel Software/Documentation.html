@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>XUtils – Smart Unity Utilities</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+        h1, h2, h3, h4 { font-weight: 600; }
+        h1 { font-size: 26px; }
+        h2 { font-size: 22px; margin-top: 24px; }
+        h3 { font-size: 18px; margin-top: 18px; }
+        h4 { font-size: 16px; margin-top: 14px; }
+        code { font-family: Consolas, monospace; background: #f5f5f5; padding: 2px 4px; border-radius: 2px; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        ul { margin-top: 4px; }
+    </style>
+</head>
+<body>
+
+<h1>XUtils – Smart Unity Utilities</h1>
+
+<p>
+XUtils is a collection of lightweight, code-first utility helpers for Unity.
+It focuses on making common tasks (UI, strings, formatting, input, etc.) easier,
+while staying non-intrusive and dependency-free.
+</p>
+
+<p>
+<strong>Target:</strong> Unity C# scripts<br />
+<strong>Style:</strong> Drop-in utilities, no custom editor windows required.
+</p>
+
+<h2>1. Installation</h2>
+<ul>
+    <li>Import the <code>XUtils</code> folder into your Unity project.</li>
+    <li>Make sure TextMeshPro is installed (for TMP-related utilities).</li>
+    <li>Open the sample scene(s) under:<br />
+        <code>Assets/Xeirel Software/XUtils/Demo/</code>
+    </li>
+</ul>
+
+<h2>2. Overview of Features</h2>
+<ul>
+    <li><strong>UI Utilities</strong>
+        <ul>
+            <li>Hover detection and hover timing for UI elements.</li>
+            <li>Double-click handling for UI elements.</li>
+            <li>Simple conditional inspector fields (editor only).</li>
+        </ul>
+    </li>
+    <li><strong>String &amp; Text Utilities</strong>
+        <ul>
+            <li>Colorized JSON output for TMP.</li>
+            <li>Smart number/amount formatting.</li>
+            <li>Money highlighting with color.</li>
+            <li>Rich Text helpers (bold, italic, color, size).</li>
+            <li>Hex/Base64 encode &amp; decode for structs.</li>
+            <li>TMP tag stripping, whitespace removal.</li>
+        </ul>
+    </li>
+    <li><strong>Math &amp; Geometry Utilities</strong>
+        <ul>
+            <li>Index conversion helpers for grids (1D &lt;-&gt; 2D/3D/4D).</li>
+            <li>Smoothed lerp helpers with snapping.</li>
+            <li>Vector helpers and bounds/world-space utilities.</li>
+            <li>Random float and bounds sampling.</li>
+        </ul>
+    </li>
+    <li><strong>Collections &amp; Utility Extensions</strong>
+        <ul>
+            <li>Safe accessors and search helpers for <code>IEnumerable</code>/<code>List</code>/<code>Dictionary</code>.</li>
+            <li>Chunking, <code>DistinctBy</code>, <code>MinBy</code>/<code>MaxBy</code> equivalents.</li>
+            <li><code>LayerMask</code> helpers and simple index wrapping.</li>
+        </ul>
+    </li>
+    <li><strong>Resources &amp; Asset Helpers</strong>
+        <ul>
+            <li>Cached wrapper for <code>Resources.Load</code> / <code>Resources.LoadAll</code>.</li>
+        </ul>
+    </li>
+    <li><strong>Debug / Developer Helpers</strong>
+        <ul>
+            <li>Stack trace parsing to extract the calling code context.</li>
+            <li>String morphing utilities to create text transition effects.</li>
+        </ul>
+    </li>
+</ul>
+
+<h2>3. UI Utilities</h2>
+
+<h3>3.1 XUIHoverUtility</h3>
+<p>
+Namespace: <code>XUtils.UIUtils</code><br />
+Static class: <code>XUIHoverUtility</code>
+</p>
+
+<p>
+Centralized hover detection for Unity UI (EventSystem-based).
+It tracks the currently hovered <code>GameObject</code> and how long the pointer has been hovering over it.
+</p>
+
+<p><strong>Key members:</strong></p>
+<ul>
+    <li><code>GameObject XUIHoverUtility.CurrentHovered</code></li>
+    <li><code>float XUIHoverUtility.SecondsSinceHoverEnter</code></li>
+    <li><code>bool XUIHoverUtility.IsHovered(GameObject go)</code></li>
+    <li><code>bool XUIHoverUtility.IsHovered(RectTransform rt)</code></li>
+    <li><code>bool XUIHoverUtility.IsHoveredIncludingSelfAndChildren(RectTransform target)</code></li>
+    <li>Events:
+        <ul>
+            <li><code>Action&lt;GameObject&gt; XUIHoverUtility.OnHoverEnter</code></li>
+            <li><code>Action&lt;GameObject&gt; XUIHoverUtility.OnHoverExit</code></li>
+            <li><code>Action&lt;GameObject&gt; XUIHoverUtility.OnHoverChanged</code></li>
+        </ul>
+    </li>
+</ul>
+
+<p><strong>Usage:</strong></p>
+<ul>
+    <li>Call <code>XUIHoverUtility.Update()</code> once per frame from a central <code>MonoBehaviour</code> (for example, in your UI manager’s <code>Update</code> method).</li>
+    <li>Read <code>CurrentHovered</code> and <code>SecondsSinceHoverEnter</code> anywhere in your code.</li>
+</ul>
+
+<h3>3.2 UIDoubleClickHandler</h3>
+<p>
+Namespace: <code>XUtils</code><br />
+File: <code>UIDoubleClickHandler.cs</code>
+</p>
+
+<p>
+Provides simple, reusable double-click detection for UI elements.
+</p>
+
+<p><strong>Core concepts:</strong></p>
+<ul>
+    <li><code>IPointerDoubleClickHandler</code> – interface used for double-click callbacks.</li>
+    <li><code>UIDoubleClickHandler</code> – a <code>MonoBehaviour</code> you can add to UI elements to receive double-clicks via an inspector event (<code>UnityEvent&lt;PointerEventData&gt;</code>) and/or an overridable method (<code>HandleDoubleClick</code>).</li>
+</ul>
+
+<p><strong>Usage – Inspector Only:</strong></p>
+<ul>
+    <li>Add <code>UIDoubleClickHandler</code> to a UI <code>GameObject</code> (for example, a button).</li>
+    <li>In the inspector, hook up the <em>OnDoubleClick</em> event to any method you like.</li>
+</ul>
+
+<p><strong>Usage – Inheritance (code):</strong></p>
+<ul>
+    <li>Derive from <code>UIDoubleClickHandler</code> and override <code>HandleDoubleClick</code> to implement custom behavior.</li>
+</ul>
+
+<h3>3.3 ConditionalField (Editor Only)</h3>
+<p>
+Namespace: <code>XUtils.EditorUtils</code><br />
+Files: <code>ConditionalFieldAttribute.cs</code>, <code>TestConditionalField.cs</code> (demo)
+</p>
+
+<p>
+Provides a simple attribute and property drawer to show/hide fields in the inspector based on other field values, without writing a custom editor.
+</p>
+
+<p><strong>Examples:</strong></p>
+<pre><code>// Toggle-based:
+public bool ShowAdvancedSettings;
+[ConditionalField(nameof(ShowAdvancedSettings))]
+public bool ShowFPS;
+
+// Enum-based:
+public TestEnum MyTestEnum;
+[ConditionalField(nameof(MyTestEnum), typeof(TestEnum), TestEnum.OptionB)]
+public string AdvancedOptionForB;
+</code></pre>
+
+<p>
+This keeps inspectors clean while still being easy to configure from code.
+</p>
+
+<h2>4. String &amp; Text Utilities</h2>
+<p>
+Namespace: <code>XUtils.StringUtils</code><br />
+Static class: <code>XString</code>
+</p>
+
+<h3>4.1 JSON Colorization (for TextMeshPro)</h3>
+<ul>
+    <li>
+        <code>ColorizeJson(string json)</code> returns a TMP-compatible string with <code>&lt;color&gt;</code> tags applied to:
+        <ul>
+            <li>Keys</li>
+            <li>Strings</li>
+            <li>Numbers</li>
+            <li>Booleans</li>
+            <li><code>null</code></li>
+            <li>Symbols (<code>{}</code>, <code>[]</code>, <code>,</code>)</li>
+        </ul>
+    </li>
+</ul>
+
+<h3>4.2 Smart Number Formatting</h3>
+<ul>
+    <li><code>ToSmartString&lt;T&gt;(T number, int maxDecimals = 2, bool useThousandSeparator = false)</code>
+        <ul>
+            <li>Uses current culture decimal / thousand separators.</li>
+            <li>Trims unnecessary decimals if the value is an integer.</li>
+            <li>Optionally uses thousand separators.</li>
+        </ul>
+    </li>
+</ul>
+
+<h3>4.3 Money Highlighting</h3>
+<ul>
+    <li><code>GiveMoneyColor(this string input)</code>
+        <ul>
+            <li>Scans the string for amounts followed by a currency symbol (for example, <code>$</code>) and wraps them in <code>&lt;color&gt;</code> tags to highlight them.</li>
+        </ul>
+    </li>
+</ul>
+
+<h3>4.4 Rich Text Helpers</h3>
+<ul>
+    <li><code>Color(this string text, string color)</code> / <code>Color(this string text, Color color)</code></li>
+    <li><code>Bold(this string text)</code></li>
+    <li><code>Italic(this string text)</code></li>
+    <li><code>Size(this string text, string size)</code></li>
+</ul>
+
+<p>
+These helpers simplify generating TMP rich text at runtime.
+</p>
+
+<h3>4.5 String Morphing</h3>
+<ul>
+    <li><code>MorphString(string a, string b, float t)</code></li>
+    <li><code>MorphStringRandom(string a, string b, float t)</code></li>
+</ul>
+
+<p>
+These methods help create text transition effects between two string values, controlled by <code>t</code> (0–1).
+</p>
+
+<h3>4.6 Misc String Helpers</h3>
+<ul>
+    <li><code>RemoveWhitespaces()</code></li>
+    <li><code>RemoveTMPTags()</code></li>
+    <li><code>TrimStartOnce()</code></li>
+    <li><code>ConvertToColor()</code></li>
+    <li><code>SetTmpText()</code></li>
+</ul>
+
+<h2>5. Math &amp; Geometry Utilities</h2>
+<p>
+Namespace: <code>XUtils.MathUtils</code><br />
+Static class: <code>XMath</code>
+</p>
+
+<h3>5.1 Index Helpers for Grids</h3>
+<ul>
+    <li><code>To2D/To3D/To4D(this int index, int2/int3/int4 size)</code></li>
+    <li><code>To1D(this int2/int3/int4 index, int2/int3/int4 size)</code></li>
+</ul>
+
+<p>
+These helpers convert between 1D indices and multi-dimensional indices, which is very useful for grid-based games and data structures (tilemaps, voxel grids, etc.).
+</p>
+
+<h3>5.2 Lerp Helpers with Snapping</h3>
+<ul>
+    <li><code>Lerp(float current, float target, float t, float snapDistance = 0.0001f)</code></li>
+    <li><code>Lerp(Vector2/Vector3/Quaternion current, target, float t, float snapDistance = 0.0001f)</code></li>
+    <li>Extension variants like <code>LerpTo(ref float val, float to, float time, int? r = null)</code></li>
+</ul>
+
+<p>
+They provide convenient smoothing with optional snapping when close to target, reducing small floating point drift.
+</p>
+
+<h3>5.3 Numeric Helpers</h3>
+<ul>
+    <li><code>Clamp/Min/Max/Abs/Pow/Distance</code> for <code>float</code>/<code>int</code>/<code>double</code>/<code>long</code></li>
+    <li><code>Remap(this float/double valueIn, baseMin, baseMax, limitMin, limitMax)</code></li>
+    <li><code>NotNaN()</code> helpers to guard against NaN values.</li>
+</ul>
+
+<p>
+These are small quality-of-life wrappers around common math operations tailored to Unity projects.
+</p>
+
+<h3>5.4 Vector Helpers</h3>
+<ul>
+    <li><code>ToInt()/ToFloat()</code> conversions for <code>Vector2/3</code> and <code>Vector2Int/3Int</code></li>
+    <li><code>Multiply</code> (component-wise scale)</li>
+    <li><code>Distance/DistanceEps/DistanceR</code></li>
+    <li><code>Dot/Angle</code></li>
+    <li><code>R/Abs/Pow</code> for <code>Vector2/Vector3</code></li>
+    <li>Swizzle-like helpers: <code>XY()</code>, <code>YZ()</code>, <code>XZ()</code>, <code>XYZ()</code>, etc.</li>
+    <li>Bounds transform helpers:
+        <ul>
+            <li><code>Calc(this Matrix4x4, Vector3)</code></li>
+            <li><code>TransformBoundsToWorld(this Bounds, Transform)</code></li>
+            <li><code>TransformMatrix(this Bounds, Matrix4x4)</code></li>
+        </ul>
+    </li>
+</ul>
+
+<p>
+These focus on typical gameplay and geometry tasks like snapping, distance checks with tolerance, and transforming local bounds into world-space AABBs.
+</p>
+
+<h3>5.5 Random Helpers</h3>
+<ul>
+    <li><code>System.Random.NextFloat(float minValue, float maxValue)</code></li>
+    <li><code>Bounds.GetRandomPosition()</code></li>
+</ul>
+
+<p>
+Useful for sampling random positions inside bounds or generating random floats via <code>System.Random</code>.
+</p>
+
+<h2>6. Struct Serialization Helpers</h2>
+<ul>
+    <li><code>GetHex&lt;T&gt;(this T value)</code> / <code>ResolveHex&lt;T&gt;(this string hex)</code></li>
+    <li><code>EncodeToBase64&lt;T&gt;(T value)</code> / <code>DecodeFromBase64&lt;T&gt;(string base64)</code></li>
+</ul>
+
+<p>
+These helpers are intended for advanced scenarios where you need to inspect or serialize value types at the byte level.
+</p>
+
+<h2>7. Collections &amp; Utility Extensions</h2>
+<p>
+Namespace: <code>XUtils.CollectionsUtils</code><br />
+Static class: <code>XCollections</code>
+</p>
+
+<p><strong>Highlights:</strong></p>
+<ul>
+    <li><strong>Safe access and search:</strong>
+        <ul>
+            <li><code>GetAt(index)</code> – safe element access by index.</li>
+            <li><code>Find(predicate)</code> / <code>TryFind(List&lt;T&gt;, Predicate&lt;T&gt;, out T)</code></li>
+            <li><code>FindWithIndex(predicate)</code></li>
+            <li><code>FindIndex(predicate)</code></li>
+            <li><code>GetKeyFromValue</code> on <code>IDictionary</code>.</li>
+        </ul>
+    </li>
+    <li><strong>Sequence utilities:</strong>
+        <ul>
+            <li><code>Enumerate(Func&lt;int, T&gt; selector, int count)</code></li>
+            <li><code>ConvertTo</code> (projection via <code>Converter&lt;TSource, TOut&gt;</code>)</li>
+            <li><code>SelectEach</code> (apply selector to each item)</li>
+            <li><code>ToSeparatedString</code> (simple join helper)</li>
+        </ul>
+    </li>
+    <li><strong>Random and chunking:</strong>
+        <ul>
+            <li><code>RandomElement</code> (optional <code>Random</code>)</li>
+            <li><code>Chunk(size)</code> – split sequence into fixed-size arrays.</li>
+        </ul>
+    </li>
+    <li><strong>Distinct and min/max by key:</strong>
+        <ul>
+            <li><code>DistinctBy(keySelector)</code></li>
+            <li><code>MaxBy/MinBy(keySelector)</code></li>
+        </ul>
+    </li>
+    <li><strong>Counting and index helpers:</strong>
+        <ul>
+            <li><code>TryGetNonEnumeratedCount</code></li>
+            <li><code>Index</code> (enumerate with indices)</li>
+            <li><code>IndexOf(predicate)</code></li>
+            <li><code>WrapIndex</code> – safe index wrap around list/array length.</li>
+        </ul>
+    </li>
+    <li><strong>LayerMask helper:</strong>
+        <ul>
+            <li><code>Contains(this LayerMask, int layer)</code></li>
+        </ul>
+    </li>
+</ul>
+
+<p>
+These helpers give you many LINQ-like features in a Unity-friendly, extension-based style and are especially handy when working with collections in gameplay and tools code.
+</p>
+
+<h2>8. Resources &amp; Asset Helpers</h2>
+<p>
+Namespace: <code>XUtils.UnityUtils</code><br />
+Static class: <code>XResources</code>
+</p>
+
+<p>
+Provides a thin caching layer around Unity’s Resources API:
+</p>
+<ul>
+    <li><code>Load&lt;T&gt;(string path)</code></li>
+    <li><code>TryLoad&lt;T&gt;(string path, out T asset)</code></li>
+    <li><code>LoadFirst&lt;T&gt;(string path)</code></li>
+    <li><code>TryLoadFirst&lt;T&gt;(string path, out T asset)</code></li>
+    <li><code>LoadAtPath&lt;T&gt;(string folder, string name)</code></li>
+    <li><code>TryLoadAtPath&lt;T&gt;(string folder, string name, out T asset)</code></li>
+    <li><code>LoadAll&lt;T&gt;(string path)</code></li>
+    <li><code>Unload(string path)</code></li>
+    <li><code>UnloadAll()</code></li>
+    <li><code>Clear()</code> – clear cache references.</li>
+</ul>
+
+<p>
+The cache avoids repeated <code>Resources.Load</code> calls and offers debug logging (via <code>XUtilsBase</code>) when enabled.
+</p>
+
+<h2>9. Debug &amp; Stack Trace Helpers</h2>
+<ul>
+    <li><code>ExtractCallerFromStack(this string stackTrace)</code></li>
+</ul>
+
+<p>
+Parses a stack trace string and tries to extract the most relevant line from project code (for example, under <code>Assets/...</code>).
+This is useful in custom log or diagnostic UIs.
+</p>
+
+<h2>10. Demo Scripts</h2>
+<p>
+Namespace: <code>XUtils.Samples</code><br />
+Files: <code>XUIUtilsSamples.cs</code>, <code>DoubleClickableRect.cs</code>, <code>TestConditionalField.cs</code>
+</p>
+
+<p>The sample scripts demonstrate:</p>
+<ul>
+    <li>Text morphing between two strings with a slider and a randomization toggle.</li>
+    <li>UI hover detection and hover time display.</li>
+    <li>Double-click handling integrated with <code>UIDoubleClickHandler</code> (including a subclass example in <code>DoubleClickableRect</code>).</li>
+    <li>JSON colorization output in a TMP text.</li>
+    <li>Money text formatting and highlighting.</li>
+    <li>Stack trace display and caller extraction.</li>
+    <li>Conditional inspector fields using <code>ConditionalFieldAttribute</code>.</li>
+</ul>
+
+<p>
+Use the demo scene as a reference for integrating XUtils into your own UI flows and for seeing practical examples of each utility in action.
+</p>
+
+</body>
+</html>

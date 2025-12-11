@@ -1,0 +1,18 @@
+{
+    "name": "Xeirel.XUtils.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:623b66a3cf476504197a1c289c9c826d"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

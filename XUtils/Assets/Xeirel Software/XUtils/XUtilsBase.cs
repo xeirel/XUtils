@@ -5,6 +5,7 @@ namespace XUtils
     public static class XUtilsBase
     {
         const string LOG_TAG = "<color=green>[XEU]</color> ";
+        public static bool DEBUG = true;
         public static void Log(object message) => Debug.Log(LOG_TAG + message);
         public static void LogWarning(object message) => Debug.LogWarning(LOG_TAG + message);
         public static void LogError(object message) => Debug.LogError(LOG_TAG + message);

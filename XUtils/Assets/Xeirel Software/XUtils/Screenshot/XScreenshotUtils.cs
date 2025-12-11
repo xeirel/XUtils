@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace XUtils.Screenshot
+namespace XUtils.ScreenshotUtils
 {
     public static class XScreenshotUtils
     {

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using Unity.Mathematics;
 
-namespace XUtils.UI
+namespace XUtils.UIUtils
 {
     public static class XEditorUI
     {
