@@ -1,5 +1,7 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
+using XUtils.MathUtils;
+
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -209,6 +211,17 @@ namespace XUtils.InputUtils
 
             Debug.LogWarning($"[XInput] No valid binding found for action '{actionName}'.");
             return string.Empty;
+        }
+
+        public static Quaternion WithCenterMouseOffset(this Quaternion rotation, float amplitude = 10f, float maxAngle = 30)
+        {
+            Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
+            Vector2 mouseOffset = Mouse.current.position.ReadValue() - screenCenter;
+
+            Vector2 normalized = new Vector2(mouseOffset.x / screenCenter.x, mouseOffset.y / screenCenter.y);
+
+            Quaternion offsetRot = Quaternion.Euler((-normalized.y * amplitude).Clamp(-maxAngle, maxAngle), (normalized.x * amplitude).Clamp(-maxAngle, maxAngle), 0f);
+            return rotation * offsetRot;
         }
 
 

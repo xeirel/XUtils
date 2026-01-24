@@ -106,16 +106,16 @@ namespace XUtils.UnityUtils
 
             return null;
         }
-        public static void LoopComponents<T>(this GameObject obj, Action<T> action, bool includeChilds = false, bool includeInactive = true) where T : Component
+        public static void ForEachComponents<T>(this GameObject obj, Action<T> action, bool includeChilds = false, bool includeInactive = true) where T : Component
         {
             foreach (var comp in includeChilds ? obj.GetComponentsInChildren<T>(includeInactive) : obj.GetComponents<T>())
                 action(comp);
         }
 
-        public static void LoopComponents<T>(this Component comp, Action<T> action, bool includeChilds = false, bool includeInactive = true) where T : Component =>
-            LoopComponents<T>(comp.gameObject, action, includeChilds, includeInactive);
+        public static void ForEachComponents<T>(this Component comp, Action<T> action, bool includeChilds = false, bool includeInactive = true) where T : Component =>
+            ForEachComponents<T>(comp.gameObject, action, includeChilds, includeInactive);
 
-        public static void LoopBehaviours<T0, T1>(this GameObject obj, Action<Behaviour> action, bool includeChilds = false, bool includeInactive = true) where T0 : Behaviour where T1 : Behaviour
+        public static void ForEachBehaviours<T0, T1>(this GameObject obj, Action<Behaviour> action, bool includeChilds = false, bool includeInactive = true) where T0 : Behaviour where T1 : Behaviour
         {
             foreach (var comp in includeChilds ? obj.GetComponentsInChildren<T0>(includeInactive) : obj.GetComponents<T0>())
                 action(comp);
@@ -124,10 +124,10 @@ namespace XUtils.UnityUtils
                 action(comp);
         }
 
-        public static void LoopBehaviours<T0, T1>(this Component comp, Action<Behaviour> action, bool includeChilds = false, bool includeInactive = true) where T0 : Behaviour where T1 : Behaviour
-            => LoopBehaviours<T0, T1>(comp.gameObject, action, includeChilds, includeInactive);
+        public static void ForEachBehaviours<T0, T1>(this Component comp, Action<Behaviour> action, bool includeChilds = false, bool includeInactive = true) where T0 : Behaviour where T1 : Behaviour
+            => ForEachBehaviours<T0, T1>(comp.gameObject, action, includeChilds, includeInactive);
 
-        public static void LoopBehaviours<T0, T1, T2>(this GameObject obj, Action<Behaviour> action, bool includeChilds = false, bool includeInactive = true) where T0 : Behaviour where T1 : Behaviour where T2 : Behaviour
+        public static void ForEachBehaviours<T0, T1, T2>(this GameObject obj, Action<Behaviour> action, bool includeChilds = false, bool includeInactive = true) where T0 : Behaviour where T1 : Behaviour where T2 : Behaviour
         {
             foreach (var comp in includeChilds ? obj.GetComponentsInChildren<T0>(includeInactive) : obj.GetComponents<T0>())
                 action(comp);
@@ -139,8 +139,8 @@ namespace XUtils.UnityUtils
                 action(comp);
         }
 
-        public static void LoopBehaviours<T0, T1, T2>(this Component comp, Action<Behaviour> action, bool includeChilds = false, bool includeInactive = true) where T0 : Behaviour where T1 : Behaviour where T2 : Behaviour
-            => LoopBehaviours<T0, T1, T2>(comp.gameObject, action, includeChilds, includeInactive);
+        public static void ForEachBehaviours<T0, T1, T2>(this Component comp, Action<Behaviour> action, bool includeChilds = false, bool includeInactive = true) where T0 : Behaviour where T1 : Behaviour where T2 : Behaviour
+            => ForEachBehaviours<T0, T1, T2>(comp.gameObject, action, includeChilds, includeInactive);
 
 
         #endregion

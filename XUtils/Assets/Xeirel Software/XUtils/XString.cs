@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -165,6 +165,16 @@ namespace XUtils.StringUtils
             {
                 Marshal.FreeHGlobal(ptr);
             }
+        }
+        public static string GetSHA256(this string input)
+        {
+            using var sha256 = System.Security.Cryptography.SHA256.Create();
+            byte[] inputBytes = Encoding.UTF8.GetBytes(input);
+            byte[] hashBytes = sha256.ComputeHash(inputBytes);
+            var sb = new StringBuilder(hashBytes.Length * 2);
+            foreach (byte b in hashBytes)
+                sb.Append(b.ToString("x2"));
+            return sb.ToString();
         }
 
         public static string ToHex(this Color color, bool includeAlpha = false)

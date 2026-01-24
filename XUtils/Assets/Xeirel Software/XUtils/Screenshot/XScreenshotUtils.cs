@@ -57,6 +57,7 @@ namespace XUtils.ScreenshotUtils
             imageData.SaveScreenshot(filePath, extension);
             Object.DestroyImmediate(screenshot);
         }
+#if UNITY_EDITOR
         [MenuItem("CONTEXT/Camera/[XEU] Capture Screenshot", priority = 0)]
         private static void CaptureScreenshotMenuItem(MenuCommand command)
         {
@@ -69,5 +70,6 @@ namespace XUtils.ScreenshotUtils
                 XUtilsBase.ShowEditorNotification("Screenshot captured and saved.");
             }
         }
+#endif
     }
 }

@@ -1,8 +1,8 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
+using XUtils.UIUtils;
 using UnityEngine.UI;
 using XUtils.StringUtils;
-using XUtils.UIUtils;
 
 namespace XUtils.Samples
 {
@@ -33,9 +33,10 @@ namespace XUtils.Samples
         public TMP_Text StackTraceText;
         public TMP_Text StackTraceCallerText;
 
+
         private void Start()
         {
-            SimulateError();
+            //SimulateError();
         }
         private void SimulateError()
         {
@@ -72,6 +73,40 @@ namespace XUtils.Samples
         {
             clickCount++;
             DoubleClickState.text = $"Double Clicked {clickCount} times!";
+        }
+        public void BasicMessageDialog()
+        {
+            XModalDialog.ShowMessage("This is a basic message dialog.", "Basic Message");
+        }
+        public void BasicYesNoDialog()
+        {
+            XModalDialog.ShowYesNoCancel("This is a basic Yes / No / Cancel dialog. You can cancel dialogs with 'Escape' Key/Input System Action if defined.", "Do you want to proceed?").OnResult(result =>
+            {
+                XModalDialog.ShowMessage($"You selected: {result.Result.ToString()}", "Result");
+            });
+        }
+        public void BasicInputDialog()
+        {
+            XModalDialog.CreateDialog()
+                .WithTitle("Custom Input Dialog")
+                .WithMessage("Please enter your name below:")
+                .AddInputField("str_username", "Your name here...", "") // Input field with key "str_username"
+                .AddButton("Submit", ModalDialogResult.Custom)
+                .AddButton("Cancel", ModalDialogResult.Cancel)
+                .OnResult(result =>
+                {
+                    if (result.Result == ModalDialogResult.Cancel)
+                        return;
+
+                    string username = result.GetInput("str_username");
+                    if (string.IsNullOrWhiteSpace(username))
+                    {
+                        XModalDialog.ShowMessage("Name cannot be empty. Please try again.", "Input Error").OnResult((Result) => { BasicInputDialog(); });
+                        return;
+                    }
+
+                    XModalDialog.ShowMessage($"Hello {username}", "Result");
+                }).Show(); // Do not forget to call Show() at the end!
         }
     }
 }
