@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -93,7 +93,7 @@ namespace XUtils.CollectionsUtils
                 if (predicate(entry.Item))
                     return entry;
 
-            return (0, default);
+            return (-1, default);
         }
 
         /// <summary>
@@ -367,6 +367,87 @@ namespace XUtils.CollectionsUtils
         /// Returns a valid index by wrapping around the given length.
         /// </summary>
         public static int WrapIndex(int index, int length) => (index % length + length) % length;
+
+        public static IEnumerable<(T item, int score)> FuzzyMatch<T>(
+    this IEnumerable<T> source,
+    Func<T, string> selector,
+    string input,
+    int maxResults = 5,
+    int minScore = 0)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                yield break;
+
+            input = input.ToLower();
+
+            var results = new List<(T item, int score, int len)>();
+
+            foreach (var item in source)
+            {
+                string text = selector(item);
+                if (string.IsNullOrEmpty(text))
+                    continue;
+
+                int score = FuzzyScore(text, input);
+
+                if (score < minScore)
+                    continue;
+
+                results.Add((item, score, text.Length));
+            }
+
+            foreach (var r in results
+                .OrderByDescending(x => x.score)
+                .ThenBy(x => x.len)
+                .Take(maxResults))
+            {
+                yield return (r.item, r.score);
+            }
+        }
+
+        static int FuzzyScore(string text, string pattern)
+        {
+            int score = 0;
+            int patternIndex = 0;
+            int consecutive = 0;
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (patternIndex >= pattern.Length)
+                    break;
+
+                char c = char.ToLower(text[i]);
+
+                if (c == pattern[patternIndex])
+                {
+                    score += 10;
+
+                    if (consecutive > 0)
+                        score += consecutive * 5;
+
+                    if (i == 0)
+                        score += 15;
+
+                    if (i > 0 && text[i - 1] == '_')
+                        score += 10;
+
+                    if (i > 0 && char.IsUpper(text[i]))
+                        score += 10;
+
+                    consecutive++;
+                    patternIndex++;
+                }
+                else
+                {
+                    consecutive = 0;
+                }
+            }
+
+            if (patternIndex != pattern.Length)
+                return -1;
+
+            return score;
+        }
 #nullable disable
     }
 }
