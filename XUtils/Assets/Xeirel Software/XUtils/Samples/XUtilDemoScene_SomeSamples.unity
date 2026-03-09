@@ -1160,10 +1160,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Xeirel.XUtils.Runtime::XUtils.Console.XConsoleGUI
   console: {fileID: 0}
-  toggleKey: 96
   visible: 1
-  height: 320
+  height: 360
   maxVisibleLines: 18
+  maxWidth: 960
+  animationSpeed: 10
+  fontSize: 16
+  headerFontSize: 21
 --- !u!1 &513350428
 GameObject:
   m_ObjectHideFlags: 0

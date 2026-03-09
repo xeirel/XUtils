@@ -3,16 +3,20 @@ using UnityEngine;
 using XUtils.UIUtils;
 using UnityEngine.UI;
 using XUtils.StringUtils;
+using XUtils.Console;
 
 namespace XUtils.Samples
 {
     public class XUIUtilsSamples : MonoBehaviour
     {
         [Header("Text Morphing")]
+        [DevVariable("xutils.samples.morphText")]
         public TMP_Text MorphText;
         public Slider MorphSlider;
         public Toggle MorphRandomizeToggle;
+        [DevVariable("xutils.samples.morphStart", Description = "Starting string for morphing example.")]
         public string startString = "Hello World!";
+        [DevVariable("xutils.samples.morphEnd", Description = "Ending string for morphing example.")]
         public string endString = "Goodbye World :(";
 
         [Header("UI Hover Utility")]
@@ -37,6 +41,7 @@ namespace XUtils.Samples
         private void Start()
         {
             //SimulateError();
+
         }
         private void SimulateError()
         {
@@ -74,10 +79,12 @@ namespace XUtils.Samples
             clickCount++;
             DoubleClickState.text = $"Double Clicked {clickCount} times!";
         }
+        [DevCommand("xutils.basicdialog", Description = "Shows a basic message dialog.")]
         public void BasicMessageDialog()
         {
             XModalDialog.ShowMessage("This is a basic message dialog.", "Basic Message");
         }
+        [DevCommand("xutils.yesnodialog", Description = "Shows a basic Yes / No / Cancel dialog.")]
         public void BasicYesNoDialog()
         {
             XModalDialog.ShowYesNoCancel("This is a basic Yes / No / Cancel dialog. You can cancel dialogs with 'Escape' Key/Input System Action if defined.", "Do you want to proceed?").OnResult(result =>

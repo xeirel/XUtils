@@ -22,8 +22,9 @@ namespace XUtils.Console
         private static readonly HashSet<Type> StaticRegistrations = new();
 
         public static int CommandCount => Commands.Count;
-        public static string[] CommandNames => Commands.Keys.ToArray();
         public static int VariableCount => Variables.Count;
+        public static string[] CommandNames => Commands.Keys.ToArray();
+        public static string[] VariableNames => Variables.Keys.ToArray();
 
         public static void Clear()
         {
@@ -118,7 +119,7 @@ namespace XUtils.Console
                 if (!MatchesFilter(pair.Key, normalizedFilter))
                     continue;
 
-                lines.Add($"cmd  {pair.Value.Name}{BuildParameterSignature(pair.Value.Parameters)}");
+                lines.Add($"cmd  {pair.Value.Name}{BuildParameterSignature(pair.Value.Parameters)} - {pair.Value.Description}");
             }
 
             foreach (KeyValuePair<string, VariableEntry> pair in Variables)
@@ -126,7 +127,7 @@ namespace XUtils.Console
                 if (!MatchesFilter(pair.Key, normalizedFilter))
                     continue;
 
-                lines.Add($"var  {pair.Value.Name} : {GetFriendlyTypeName(pair.Value.ValueType)}");
+                lines.Add($"var  {pair.Value.Name} : {GetFriendlyTypeName(pair.Value.ValueType)} - {pair.Value.Description}");
             }
 
             lines.Sort(StringComparer.OrdinalIgnoreCase);
